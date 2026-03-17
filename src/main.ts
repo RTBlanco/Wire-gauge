@@ -1,60 +1,49 @@
-import './style.css'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.ts'
+
+import { getAWG } from './awg'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src=${viteLogo} class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+  <form id="form" action="">
+    <label for="volts">Volts</label>
+    <input type="text" name="volts" id="volts">
 
-<div class="ticks"></div>
+    <label for="volt-drop">Voltage drop</label>
+    <input type="text" name="voltDrop" id="voltDrop">
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src=${viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+    <label for="material">Material</label>
+    <input type="text" name="material" id="material">
 
-<div class="ticks"></div>
-<section id="spacer"></section>
+    <label for="amps">Amps</label>
+    <input type="text" name="amps" id="amps">
+
+    <label for="length">Length</label>
+    <input type="text" name="length" id="length">
+
+    <button>Enter</button>
+  </form>
+
+  <p></p>
 `
+const form = document.getElementById("form") as HTMLFormElement
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+
+form?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(form);
+  const formObject = { ...Object.fromEntries(formData.entries()) };
+
+  const amps = parseFloat(formObject.amps as string);
+  const length = parseFloat(formObject.length as string) * 0.3048;
+  const volts = parseFloat(formObject.volts as string);
+  const voltDrop = parseFloat(formObject.voltDrop as string) / 100;
+  const resistivity = 1.68e-8;
+
+  const voltageDrop = volts * voltDrop;
+  const area_m2 = (2 * resistivity * length * amps) / voltageDrop;
+  const area_mm2 = area_m2 * 1_000_000;
+  const awg = getAWG(area_mm2);
+
+  document.querySelector('p')!.textContent = `Recommended AWG: ${awg}`;
+  console.log(`Area: ${area_mm2.toFixed(4)} mm²`);
+  console.log(`Recommended AWG: ${awg}`);
+});
+
