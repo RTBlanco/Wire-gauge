@@ -10,7 +10,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <input type="text" name="voltDrop" id="voltDrop">
 
     <label for="material">Material</label>
-    <input type="text" name="material" id="material">
+    <select name="material" id="material">
+      <option value="1.68e-8">Copper</option>
+      <option value="2.65e-8">Aluminim</option>
+    </select>
+
 
     <label for="amps">Amps</label>
     <input type="text" name="amps" id="amps">
@@ -35,7 +39,7 @@ form?.addEventListener('submit', (e) => {
   const length = parseFloat(formObject.length as string) * 0.3048;
   const volts = parseFloat(formObject.volts as string);
   const voltDrop = parseFloat(formObject.voltDrop as string) / 100;
-  const resistivity = 1.68e-8;
+  const resistivity = parseFloat(formObject.material as string);
 
   const voltageDrop = volts * voltDrop;
   const area_m2 = (2 * resistivity * length * amps) / voltageDrop;
