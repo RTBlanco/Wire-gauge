@@ -1,13 +1,231 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>wire-gauge</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+	<head>
+		<meta charset="UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./src/style.css" />
+		<title>wire-gauge</title>
+	</head>
+	<body>
+		<div class="max-w-5xl mx-auto mt-6 px-4 pb-12 flex gap-6">
+			<!-- Main panel -->
+			<main class="flex-1">
+				<!-- Page header -->
+				<div class="mb-4">
+					<h1
+						class="font-heading font-bold text-3xl uppercase text-site-dark tracking-wide"
+					>
+						Wire Gauge Calculator
+					</h1>
+					<p class="text-sm text-gray-500 mt-1">
+						Find the correct AWG wire size for your application
+					</p>
+				</div>
+
+				<!-- Form card -->
+				<div class="bg-white border border-site-border">
+					<div
+						class="bg-site-dark text-white font-heading font-bold uppercase text-sm px-4 py-3 tracking-wider"
+					>
+						Enter Your Values
+					</div>
+
+					<div class="p-6">
+						<form id="wire-form" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+							<!-- Volts -->
+							<div>
+								<label
+									for="volts"
+									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
+								>
+									System Voltage (V)
+								</label>
+								<input
+									type="number"
+									id="volts"
+									name="volts"
+									placeholder="e.g. 12"
+									min="0"
+									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
+								/>
+							</div>
+
+							<!-- Amps -->
+							<div>
+								<label
+									for="amps"
+									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
+								>
+									Current (A)
+								</label>
+								<input
+									type="number"
+									id="amps"
+									name="amps"
+									placeholder="e.g. 30"
+									min="0"
+									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
+								/>
+							</div>
+
+							<!-- Length -->
+							<div>
+								<label
+									for="length"
+									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
+								>
+									Wire Length (ft)
+								</label>
+								<input
+									type="number"
+									id="length"
+									name="length"
+									placeholder="e.g. 5"
+									min="0"
+									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
+								/>
+							</div>
+
+							<!-- Voltage Drop -->
+							<div>
+								<label
+									for="voltDrop"
+									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
+								>
+									Allowed Voltage Drop (%)
+								</label>
+								<input
+									type="number"
+									id="voltDrop"
+									name="voltDrop"
+									placeholder="e.g. 3"
+									value="3"
+									min="1"
+									max="20"
+									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
+								/>
+							</div>
+
+							<!-- Material -->
+							<div class="sm:col-span-2">
+								<label
+									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
+								>
+									Wire Material
+								</label>
+								<div class="flex gap-4">
+									<label class="flex items-center gap-2 text-sm cursor-pointer">
+										<input
+											type="radio"
+											name="material"
+											value="copper"
+											checked
+											class="accent-site-red"
+										/>
+										Copper (1.68×10⁻⁸ Ω·m)
+									</label>
+									<label class="flex items-center gap-2 text-sm cursor-pointer">
+										<input
+											type="radio"
+											name="material"
+											value="aluminum"
+											class="accent-site-red"
+										/>
+										Aluminum (2.82×10⁻⁸ Ω·m)
+									</label>
+								</div>
+							</div>
+
+							<!-- Submit -->
+							<div class="sm:col-span-2 pt-2">
+								<button
+									type="submit"
+									class="bg-site-dark hover:bg-site-mid text-white font-heading font-bold uppercase tracking-widest text-sm px-8 py-3 transition-colors duration-150"
+								>
+									Calculate Gauge
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<!-- Result -->
+				<div id="result-section" class="hidden mt-4">
+					<div class="bg-white border border-site-border">
+						<div
+							class="bg-site-dark text-white font-heading font-bold uppercase text-sm px-4 py-3 tracking-wider"
+						>
+							Result
+						</div>
+						<div
+							class="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+						>
+							<div
+								class="awg-badge flex items-center justify-center bg-site-dark text-white w-28 h-28 flex-shrink-0"
+							>
+								<div class="text-center">
+									<div
+										class="font-heading font-bold text-4xl leading-none"
+										id="awg-number"
+									>
+										—
+									</div>
+									<div
+										class="font-heading text-xs uppercase tracking-widest mt-1 text-gray-400"
+									>
+										AWG
+									</div>
+								</div>
+							</div>
+
+							<div class="text-sm text-gray-700 space-y-2 font-body">
+								<div class="flex gap-2">
+									<span
+										class="font-heading font-semibold uppercase text-site-dark w-36"
+										>Cross Section:</span
+									>
+									<span id="res-area">—</span>
+								</div>
+								<div class="flex gap-2">
+									<span
+										class="font-heading font-semibold uppercase text-site-dark w-36"
+										>Voltage Drop:</span
+									>
+									<span id="res-vdrop">—</span>
+								</div>
+								<div class="flex gap-2">
+									<span
+										class="font-heading font-semibold uppercase text-site-dark w-36"
+										>Wire Length:</span
+									>
+									<span id="res-length">—</span>
+								</div>
+								<div class="flex gap-2">
+									<span
+										class="font-heading font-semibold uppercase text-site-dark w-36"
+										>Material:</span
+									>
+									<span id="res-material">—</span>
+								</div>
+								<p class="text-xs text-gray-400 pt-2">
+									Always round up to the next available gauge for safety.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Error -->
+				<div
+					id="error-section"
+					class="hidden mt-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 text-sm font-body"
+				>
+					Please fill in all fields with valid numbers.
+				</div>
+			</main>
+		</div>
+		<!-- <div id="app"></div> -->
+		<script type="module" src="/src/main.ts"></script>
+	</body>
 </html>
