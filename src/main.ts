@@ -51,4 +51,5 @@ form?.addEventListener('submit', (e) => {
   console.log(`Recommended AWG: ${awg}`);
 });
 
-// make it show whem entered 
+// make it show whem entered
+// design it like its ment for steves. shop 
