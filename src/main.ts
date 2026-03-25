@@ -53,3 +53,4 @@ form?.addEventListener('submit', (e) => {
 
 // make it show whem entered
 // design it like its ment for steves. shop 
+// make it something he can move around his site
