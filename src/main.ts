@@ -1,32 +1,32 @@
 
 import { getAWG } from './awg'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <form id="form" action="">
-    <label for="volts">Volts</label>
-    <input type="text" name="volts" id="volts">
+// document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+//   <form id="form" action="">
+//     <label for="volts">Volts</label>
+//     <input type="text" name="volts" id="volts">
 
-    <label for="volt-drop">Voltage drop</label>
-    <input type="text" name="voltDrop" id="voltDrop">
+//     <label for="volt-drop">Voltage drop</label>
+//     <input type="text" name="voltDrop" id="voltDrop">
 
-    <label for="material">Material</label>
-    <select name="material" id="material">
-      <option value="1.68e-8">Copper</option>
-      <option value="2.65e-8">Aluminim</option>
-    </select>
+//     <label for="material">Material</label>
+//     <select name="material" id="material">
+//       <option value="1.68e-8">Copper</option>
+//       <option value="2.65e-8">Aluminim</option>
+//     </select>
 
 
-    <label for="amps">Amps</label>
-    <input type="text" name="amps" id="amps">
+//     <label for="amps">Amps</label>
+//     <input type="text" name="amps" id="amps">
 
-    <label for="length">Length</label>
-    <input type="text" name="length" id="length">
+//     <label for="length">Length</label>
+//     <input type="text" name="length" id="length">
 
-    <button>Enter</button>
-  </form>
+//     <button>Enter</button>
+//   </form>
 
-  <p></p>
-`
+//   <p></p>
+// `
 const form = document.getElementById("form") as HTMLFormElement
 
 
@@ -46,11 +46,19 @@ form?.addEventListener('submit', (e) => {
   const area_mm2 = area_m2 * 1_000_000;
   const awg = getAWG(area_mm2);
 
+  checkIfAllFilled(formData)
   document.querySelector('p')!.textContent = `Recommended AWG: ${awg}`;
   console.log(`Area: ${area_mm2.toFixed(4)} mm²`);
   console.log(`Recommended AWG: ${awg}`);
 });
 
 // make it show whem entered
+function checkIfAllFilled(form: FormData) {
+  const formObject = { ...Object.fromEntries(form.entries()) }
+
+  console.log(formObject)
+}
+
+
 // design it like its ment for steves. shop 
 // make it something he can move around his site
