@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+@theme {
+  --color-site-dark: #2d2d2d;
+  --color-site-mid: #3a3a3a;
+  --color-site-light: #f0f0f0;
+  --color-site-border: #cccccc;
+  --color-site-red: #cc0000;
+  --color-site-accent: #e8e8e8;
+
+  --font-heading: 'Barlow Condensed', sans-serif;
+  --font-body: 'Barlow', sans-serif;
+}
+
 body { font-family: 'Barlow', sans-serif; background: #e8e8e8; }
 h1, h2, h3, label, .heading { font-family: 'Barlow Condensed', sans-serif; }
 
