@@ -27,7 +27,7 @@ import { getAWG } from './awg'
 
 //   <p></p>
 // `
-const form = document.getElementById("form") as HTMLFormElement
+const form = document.getElementById("wire-form") as HTMLFormElement
 
 
 form?.addEventListener('submit', (e) => {
@@ -47,6 +47,7 @@ form?.addEventListener('submit', (e) => {
   const awg = getAWG(area_mm2);
 
   checkIfAllFilled(formData)
+  
   document.querySelector('p')!.textContent = `Recommended AWG: ${awg}`;
   console.log(`Area: ${area_mm2.toFixed(4)} mm²`);
   console.log(`Recommended AWG: ${awg}`);
