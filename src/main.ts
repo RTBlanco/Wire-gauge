@@ -47,7 +47,11 @@ form?.addEventListener('submit', (e) => {
   const awg = getAWG(area_mm2);
 
   checkIfAllFilled(formData)
-  
+
+  const results = document.getElementById("result-section")
+
+  results?.classList.toggle('hidden')
+
   document.querySelector('p')!.textContent = `Recommended AWG: ${awg}`;
   console.log(`Area: ${area_mm2.toFixed(4)} mm²`);
   console.log(`Recommended AWG: ${awg}`);
@@ -60,6 +64,9 @@ function checkIfAllFilled(form: FormData) {
   console.log(formObject)
 }
 
+function displayRecommendation(awg: number) {
+
+}
 
 // design it like its ment for steves. shop 
 // make it something he can move around his site
