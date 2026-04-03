@@ -1,32 +1,6 @@
 
 import { getAWG } from './awg'
 
-// document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-//   <form id="form" action="">
-//     <label for="volts">Volts</label>
-//     <input type="text" name="volts" id="volts">
-
-//     <label for="volt-drop">Voltage drop</label>
-//     <input type="text" name="voltDrop" id="voltDrop">
-
-//     <label for="material">Material</label>
-//     <select name="material" id="material">
-//       <option value="1.68e-8">Copper</option>
-//       <option value="2.65e-8">Aluminim</option>
-//     </select>
-
-
-//     <label for="amps">Amps</label>
-//     <input type="text" name="amps" id="amps">
-
-//     <label for="length">Length</label>
-//     <input type="text" name="length" id="length">
-
-//     <button>Enter</button>
-//   </form>
-
-//   <p></p>
-// `
 const form = document.getElementById("wire-form") as HTMLFormElement
 
 
@@ -50,8 +24,11 @@ form?.addEventListener('submit', (e) => {
 
   const results = document.getElementById("result-section")
 
-  results?.classList.toggle('hidden')
+  if (results?.classList.contains('hidden')) {
+    results?.classList.toggle('hidden')
+  }
 
+  displayRecommendation(awg)
   document.querySelector('p')!.textContent = `Recommended AWG: ${awg}`;
   console.log(`Area: ${area_mm2.toFixed(4)} mm²`);
   console.log(`Recommended AWG: ${awg}`);
@@ -65,7 +42,7 @@ function checkIfAllFilled(form: FormData) {
 }
 
 function displayRecommendation(awg: number) {
-
+  (document.getElementById('awg-number') as HTMLElement).innerText = `${awg}`
 }
 
 // design it like its ment for steves. shop 
