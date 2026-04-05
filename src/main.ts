@@ -31,14 +31,13 @@ form?.addEventListener('submit', (e) => {
   displayRecommendation(awg)
   // document.querySelector('p')!.textContent = `Recommended AWG: ${awg}`;
   // console.log(`Area: ${area_mm2.toFixed(4)} mm²`);
-  // console.log(`Recommended AWG: ${awg}`);
 });
 
 
 // make accept the formated object
 function displayRecommendation(awg: number) {
   (document.getElementById('awg-number') as HTMLElement).innerText = `${awg}`
-  // (document.getElementById('res-vdrop') as HTMLElement).innerText = 
+
 }
 
 // design it like its ment for steves. shop 
