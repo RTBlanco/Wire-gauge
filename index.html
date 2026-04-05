@@ -1,226 +1,454 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="./src/style.css" />
-		<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
-		<title>wire-gauge</title>
-	</head>
-	<body>
-		<div class="max-w-5xl mx-auto mt-6 px-4 pb-12 flex gap-6">
-			<!-- Main panel -->
-			<main class="flex-1">
-				<!-- Page header -->
-				<div class="mb-4">
-					<h1
-						class="font-heading font-bold text-3xl uppercase text-site-dark tracking-wide"
-					>
-						Wire Gauge Calculator
-					</h1>
-					<p class="text-sm text-gray-500 mt-1">
-						Find the correct AWG wire size for your application
-					</p>
-				</div>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>wire-gauge</title>
 
-				<!-- Form card -->
-				<div class="bg-white border border-site-border">
-					<div
-						class="bg-site-dark text-white font-heading font-bold uppercase text-sm px-4 py-3 tracking-wider"
-					>
-						Enter Your Values
-					</div>
+    <style>
+      /* ── Design tokens ── */
+      :root {
+        --color-dark:   #1a1a1a;
+        --color-mid:    #333333;
+        --color-red:    #c0392b;
+        --color-border: #d1d5db;
+        --color-bg:     #f3f4f6;
+        --font-heading: 'Barlow Condensed', sans-serif;
+        --font-body:    'Barlow', sans-serif;
+      }
 
-					<div class="p-6">
-						<form id="wire-form" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-							<!-- Volts -->
-							<div>
-								<label
-									for="volts"
-									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
-								>
-									System Voltage (V)
-								</label>
-								<input
-									type="number"
-									id="volts"
-									name="volts"
-									placeholder="e.g. 12"
-									min="0"
-									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
-								/>
-							</div>
+      /* ── Reset / base ── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-							<!-- Amps -->
-							<div>
-								<label
-									for="amps"
-									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
-								>
-									Current (A)
-								</label>
-								<input
-									type="number"
-									id="amps"
-									name="amps"
-									placeholder="e.g. 30"
-									min="0"
-									step="any"
-									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
-								/>
-							</div>
+      body {
+        font-family: var(--font-body);
+        background-color: var(--color-bg);
+        color: var(--color-dark);
+      }
 
-							<!-- Length -->
-							<div>
-								<label
-									for="length"
-									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
-								>
-									Wire Length (ft)
-								</label>
-								<input
-									type="number"
-									id="length"
-									name="length"
-									placeholder="e.g. 5"
-									min="0"
-									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
-								/>
-							</div>
+      /* ── Layout wrapper ── */
+      .layout {
+        max-width: 64rem; /* ~1024px */
+        margin: 1.5rem auto 3rem;
+        padding: 0 1rem;
+        display: flex;
+        gap: 1.5rem;
+      }
 
-							<!-- Voltage Drop -->
-							<div>
-								<label
-									for="voltDrop"
-									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
-								>
-									Allowed Voltage Drop (%)
-								</label>
-								<input
-									type="number"
-									id="voltDrop"
-									name="voltDrop"
-									placeholder="e.g. 3"
-									value="3"
-									min="1"
-									max="20"
-									class="w-full border border-site-border px-3 py-2 text-sm bg-white text-site-dark placeholder-gray-400"
-								/>
-							</div>
+      main { flex: 1; }
 
-							<!-- Material -->
-							<div class="sm:col-span-2">
-								<label
-									class="block font-heading font-semibold text-sm uppercase text-site-dark mb-1 tracking-wide"
-								>
-									Wire Material
-								</label>
-								<div class="flex gap-4">
-									<label class="flex items-center gap-2 text-sm cursor-pointer">
-										<input
-											type="radio"
-											name="material"
-											value="1.68e-8"
-											checked
-											class="accent-site-red"
-										/>
-										Copper (1.68×10⁻⁸ Ω·m)
-									</label>
-									<label class="flex items-center gap-2 text-sm cursor-pointer">
-										<input
-											type="radio"
-											name="material"
-											value="2.82e-8"
-											class="accent-site-red"
-										/>
-										Aluminum (2.82×10⁻⁸ Ω·m)
-									</label>
-								</div>
-							</div>
+      /* ── Page header ── */
+      .page-header { margin-bottom: 1rem; }
 
-							<!-- Submit -->
-							<div class="sm:col-span-2 pt-2">
-								<button
-									type="submit"
-									class="bg-site-dark hover:bg-site-mid text-white font-heading font-bold uppercase tracking-widest text-sm px-8 py-3 transition-colors duration-150"
-								>
-									Calculate Gauge
-								</button>
-							</div>
-						</form>
-					</div>
-				</div>
+      .page-header h1 {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 1.875rem;
+        text-transform: uppercase;
+        color: var(--color-dark);
+        letter-spacing: 0.05em;
+      }
 
-				<!-- Result -->
-				<div id="result-section" class="hidden mt-4">
-					<div class="bg-white border border-site-border">
-						<div
-							class="bg-site-dark text-white font-heading font-bold uppercase text-sm px-4 py-3 tracking-wider"
-						>
-							Result
-						</div>
-						<div
-							class="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6"
-						>
-							<div
-								class="awg-badge flex items-center justify-center bg-site-dark text-white w-28 h-28 flex-shrink-0"
-							>
-								<div class="text-center">
-									<div
-										class="font-heading font-bold text-4xl leading-none"
-										id="awg-number"
-									>
-										—
-									</div>
-									<div
-										class="font-heading text-xs uppercase tracking-widest mt-1 text-gray-400"
-									>
-										AWG
-									</div>
-								</div>
-							</div>
+      .page-header p {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+      }
 
-							<div class="text-sm text-gray-700 space-y-2 font-body">
-								<div class="flex gap-2">
-									<span
-										class="font-heading font-semibold uppercase text-site-dark w-36"
-										>Voltage Drop:</span
-									>
-									<span id="res-vdrop">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span
-										class="font-heading font-semibold uppercase text-site-dark w-36"
-										>Wire Length:</span
-									>
-									<span id="res-length">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span
-										class="font-heading font-semibold uppercase text-site-dark w-36"
-										>Material:</span
-									>
-									<span id="res-material">—</span>
-								</div>
-								<p class="text-xs text-gray-400 pt-2">
-									Always round up to the next available gauge for safety.
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+      /* ── Card ── */
+      .card {
+        background: #fff;
+        border: 1px solid var(--color-border);
+      }
 
-				<!-- Error -->
-				<div
-					id="error-section"
-					class="hidden mt-4 bg-red-50 border border-red-300 text-red-700 px-4 py-3 text-sm font-body"
-				>
-					Please fill in all fields with valid numbers.
-				</div>
-			</main>
-		</div>
-		<!-- <div id="app"></div> -->
-		<script type="module" src="/src/main.ts"></script>
-	</body>
+      .card-header {
+        background: var(--color-dark);
+        color: #fff;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+        letter-spacing: 0.1em;
+      }
+
+      .card-body { padding: 1.5rem; }
+
+      /* ── Form grid ── */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      @media (min-width: 640px) {
+        .form-grid { grid-template-columns: 1fr 1fr; }
+        .col-span-2 { grid-column: span 2; }
+      }
+
+      /* ── Form fields ── */
+      .field label {
+        display: block;
+        font-family: var(--font-heading);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        color: var(--color-dark);
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+      }
+
+      .field input[type="number"] {
+        width: 100%;
+        border: 1px solid var(--color-border);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        background: #fff;
+        color: var(--color-dark);
+        font-family: var(--font-body);
+        outline: none;
+      }
+
+      .field input[type="number"]::placeholder { color: #9ca3af; }
+
+      .field input[type="number"]:focus {
+        border-color: var(--color-dark);
+      }
+
+      /* ── Radio group ── */
+      .radio-group {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        font-family: var(--font-body);
+      }
+
+      .radio-label input[type="radio"] {
+        accent-color: var(--color-red);
+      }
+
+      /* ── Submit button ── */
+      .btn-submit {
+        background: var(--color-dark);
+        color: #fff;
+        font-family: var(--font-heading);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 0.875rem;
+        padding: 0.75rem 2rem;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .btn-submit:hover { background: var(--color-mid); }
+
+      /* ── Spacing utility ── */
+      .pt-2 { padding-top: 0.5rem; }
+      .mt-4 { margin-top: 1rem; }
+
+      /* ── Result section ── */
+      #result-section { margin-top: 1rem; }
+
+      .result-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+
+      @media (min-width: 640px) {
+        .result-inner {
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+
+      /* AWG badge */
+      .awg-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-dark);
+        color: #fff;
+        width: 7rem;
+        height: 7rem;
+        flex-shrink: 0;
+        text-align: center;
+      }
+
+      .awg-badge .awg-number {
+        font-family: var(--font-heading);
+        font-weight: 700;
+        font-size: 2.25rem;
+        line-height: 1;
+      }
+
+      .awg-badge .awg-label {
+        font-family: var(--font-heading);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-top: 0.25rem;
+        color: #9ca3af;
+      }
+
+      /* Result details */
+      .result-details {
+        font-size: 0.875rem;
+        color: #374151;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-family: var(--font-body);
+      }
+
+      .result-row { display: flex; gap: 0.5rem; }
+
+      .result-key {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--color-dark);
+        width: 9rem;
+        flex-shrink: 0;
+      }
+
+      .result-note {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        padding-top: 0.5rem;
+      }
+
+      /* ── Error section ── */
+      #error-section {
+        margin-top: 1rem;
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+        color: #b91c1c;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        font-family: var(--font-body);
+      }
+
+      /* ── Hidden utility ── */
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <!-- Main panel -->
+      <main>
+        <!-- Page header -->
+        <div class="page-header">
+          <h1>Wire Gauge Calculator</h1>
+          <p>Find the correct AWG wire size for your application</p>
+        </div>
+
+        <!-- Form card -->
+        <div class="card">
+          <div class="card-header">Enter Your Values</div>
+          <div class="card-body">
+            <form id="wire-form" class="form-grid">
+              <!-- Volts -->
+              <div class="field">
+                <label for="volts">System Voltage (V)</label>
+                <input
+                  type="number"
+                  id="volts"
+                  name="volts"
+                  placeholder="e.g. 12"
+                  min="0"
+                />
+              </div>
+
+              <!-- Amps -->
+              <div class="field">
+                <label for="amps">Current (A)</label>
+                <input
+                  type="number"
+                  id="amps"
+                  name="amps"
+                  placeholder="e.g. 30"
+                  min="0"
+                  step="any"
+                />
+              </div>
+
+              <!-- Length -->
+              <div class="field">
+                <label for="length">Wire Length (ft)</label>
+                <input
+                  type="number"
+                  id="length"
+                  name="length"
+                  placeholder="e.g. 5"
+                  min="0"
+                />
+              </div>
+
+              <!-- Voltage Drop -->
+              <div class="field">
+                <label for="voltDrop">Allowed Voltage Drop (%)</label>
+                <input
+                  type="number"
+                  id="voltDrop"
+                  name="voltDrop"
+                  placeholder="e.g. 3"
+                  value="3"
+                  min="1"
+                  max="20"
+                />
+              </div>
+
+              <!-- Material -->
+              <div class="field col-span-2">
+                <label>Wire Material</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input
+                      type="radio"
+                      name="material"
+                      value="1.68e-8"
+                      checked
+                    />
+                    Copper (1.68×10⁻⁸ Ω·m)
+                  </label>
+                  <label class="radio-label">
+                    <input
+                      type="radio"
+                      name="material"
+                      value="2.82e-8"
+                    />
+                    Aluminum (2.82×10⁻⁸ Ω·m)
+                  </label>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="col-span-2 pt-2">
+                <button type="submit" class="btn-submit">
+                  Calculate Gauge
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-section" class="hidden">
+          <div class="card">
+            <div class="card-header">Result</div>
+            <div class="result-inner">
+              <div class="awg-badge">
+                <div>
+                  <div class="awg-number" id="awg-number">—</div>
+                  <div class="awg-label">AWG</div>
+                </div>
+              </div>
+
+              <div class="result-details">
+                <div class="result-row">
+                  <span class="result-key">Voltage Drop:</span>
+                  <span id="res-vdrop">—</span>
+                </div>
+                <div class="result-row">
+                  <span class="result-key">Wire Length:</span>
+                  <span id="res-length">—</span>
+                </div>
+                <div class="result-row">
+                  <span class="result-key">Material:</span>
+                  <span id="res-material">—</span>
+                </div>
+                <p class="result-note">
+                  Always round up to the next available gauge for safety.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div id="error-section" class="hidden">
+          Please fill in all fields with valid numbers.
+        </div>
+      </main>
+    </div>
+
+    <!-- <script type="module" src="/src/main.ts"></script> -->
+
+		<script>
+			const form = document.getElementById("wire-form")
+
+			form?.addEventListener('submit', (e) => {
+				e.preventDefault();
+
+				const formData = new FormData(form);
+				const formObject = Object.fromEntries(formData.entries());
+
+				const amps = parseFloat(formObject.amps);
+				const length = parseFloat(formObject.length) * 0.3048;
+				const volts = parseFloat(formObject.volts);
+				const voltDrop = parseFloat(formObject.voltDrop) / 100;
+				const resistivity = parseFloat(formObject.material);
+
+				const voltageDrop = volts * voltDrop;
+				const area_m2 = (2 * resistivity * length * amps) / voltageDrop;
+				const area_mm2 = area_m2 * 1_000_000;
+
+				const awg = getAWG(area_mm2);
+
+				const results = document.getElementById("result-section");
+				if (results?.classList.contains('hidden')) {
+					results.classList.remove('hidden');
+				}
+
+				displayRecommendation(awg);
+			});
+
+			function displayRecommendation(awg) {
+				document.getElementById('awg-number').innerText = `${awg}`;
+			}
+
+			function getAWG(area_mm2) {
+				const AWG_TABLE = [
+					{ awg: 0,  mm2: 53.5 },
+					{ awg: 1,  mm2: 42.4 },
+					{ awg: 2,  mm2: 33.6 },
+					{ awg: 4,  mm2: 21.2 },
+					{ awg: 6,  mm2: 13.3 },
+					{ awg: 8,  mm2: 8.37 },
+					{ awg: 10, mm2: 5.26 },
+					{ awg: 12, mm2: 3.31 },
+					{ awg: 14, mm2: 2.08 },
+					{ awg: 16, mm2: 1.31 },
+					{ awg: 18, mm2: 0.823 },
+				]
+
+				
+				const match = AWG_TABLE
+					.slice()
+					.reverse()
+					.find(entry => entry.mm2 >= area_mm2)
+
+				return match ? match.awg : 0
+			}
+
+		</script>
+  </body>
 </html>
